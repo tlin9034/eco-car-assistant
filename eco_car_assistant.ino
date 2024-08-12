@@ -5,9 +5,11 @@
 #include <IRremote.h>
 #include <dht.h>
 
+// Initialize I2C Address with LCD
 LCD_I2C lcd(0x27);
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
 
+// Initialize Variables
 const int receivePin = 11;
 IRrecv irrecv(receivePin);
 decode_results results;
@@ -37,6 +39,7 @@ void setup() {
   accel.setRange(ADXL345_RANGE_16_G);
   Serial.println("ADXL345 initialized");
 
+  // Setup Screen for LCD
   lcd.begin();
   lcd.backlight();
   lcd.print("PRESS POWER");
@@ -47,12 +50,14 @@ void setup() {
 
 void loop() {
 
+  // Begin Loop if Power Input from Remote Detected
   if (irrecv.decode(&results)) {
     Serial.println(results.value, HEX); 
     if (power_on == false && results.value == 0xFFA25D) {
       lcd.clear();
       power_on = true;
     }
+    // End Trip Screen
     else if (power_on == true && results.value == 0xFFA25D) {
       lcd.clear();
       power_on = false;
@@ -78,6 +83,7 @@ void loop() {
 
       double x_calibrated = (event.acceleration.x - 1.80);
 
+      // Acceleration Threshold
       double accel_threshold = 3.0;
       double brake_threshold = -3.0;
       
